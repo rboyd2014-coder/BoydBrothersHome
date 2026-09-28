@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Boyd House Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1ea; --card:#fffdf9; --ink:#2a2420; --muted:#76695e; --line:#e4d9cc;
+    --brick:#a4432e; --brick-soft:#f3e2da; --ok:#3f7a4f; --focus:#c9684f; --plan-bg:#fff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1c1816; --card:#262120; --ink:#f1e9e1; --muted:#b3a597; --line:#3a322e;
+           --brick:#e0785d; --brick-soft:#3a2721; --ok:#7fbf8e; --focus:#e0785d; --plan-bg:#f4f0ea; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px}
+  header.hero{padding:40px 0 20px}
+  .eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--brick);font-weight:600}
+  h1{font-family:Fraunces,Georgia,serif;font-weight:700;font-size:clamp(30px,6vw,42px);line-height:1.1;margin:6px 0 10px}
+  h2{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:26px;margin:0 0 4px}
+  h3{font-size:15px;margin:18px 0 6px}
+  .lede{color:var(--muted);margin:0}
+  .progress{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;border-bottom:1px solid var(--line)}
+  .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;background:var(--brick);transition:width .3s ease}
+  .progress small{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin:20px 0}
+  .blurb{color:var(--muted);margin:0 0 8px}
+  .q{padding:20px 0;border-top:1px solid var(--line)}
+  .q:first-of-type{border-top:0}
+  .q-title{font-weight:600;margin:0 0 4px}
+  .q-num{color:var(--muted);font-weight:500;margin-right:6px}
+  .q-help{color:var(--muted);font-size:14px;font-weight:400;margin-left:4px}
+  .q-note{color:var(--muted);font-size:14px;margin:0 0 10px;padding-left:10px;border-left:3px solid var(--brick-soft)}
+  .q-title + .choices, .q-title + .scale, .q-title + .grid, .q-title + .rank, .q-title + input, .q-title + textarea, .q-title + .pair{margin-top:10px}
+  .choices{display:grid;gap:8px}
+  .choice{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s}
+  .choice:hover{border-color:var(--brick)}
+  .choice input{margin-top:4px;accent-color:var(--brick)}
+  .choice:has(input:checked){border-color:var(--brick);background:var(--brick-soft)}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pair .choice{flex-direction:column;align-items:stretch;min-height:84px;padding:14px}
+  .pair .choice input{position:absolute;opacity:0;pointer-events:none}
+  .pair .choice b{font-size:12px;letter-spacing:.08em;color:var(--brick)}
+  .pair .choice:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
+  .other-input{margin-top:8px}
+  .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .scale label{text-align:center;padding:12px 0;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:600}
+  .scale input,.grid input{position:absolute;opacity:0;pointer-events:none}
+  .scale label:has(input:checked){background:var(--brick);border-color:var(--brick);color:#fff}
+  .scale label:has(input:focus-visible),.grid label:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
+  .scale-ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:6px}
+  .grid{display:grid;gap:6px}
+  .grid-row{display:grid;grid-template-columns:1fr repeat(5,40px);gap:6px;align-items:center}
+  .grid-head{font-size:12px;color:var(--muted);text-align:center}
+  .grid-row>span{font-size:15px}
+  .grid label{display:flex;align-items:center;justify-content:center;height:38px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
+  .grid label:has(input:checked){background:var(--brick);border-color:var(--brick);color:#fff}
+  .rank{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .rank li{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+  .rank li .pos{font-weight:700;color:var(--brick);width:18px}
+  .rank li .lbl{flex:1}
+  .rank li button{padding:6px 10px;border-radius:8px;font-size:14px;line-height:1}
+  .rank-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:13px;color:var(--muted)}
+  .rank-foot button{padding:8px 12px;font-size:14px}
+  .rank.untouched li{border-style:dashed}
+  input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  textarea{min-height:90px;resize:vertical}
+  input[type=text]:focus,textarea:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:transparent}
+  .note{font-size:13px;color:var(--brick);min-height:18px;margin-top:6px}
+  .nav{display:flex;justify-content:space-between;gap:12px;margin:8px 0 48px}
+  button{font:inherit;font-weight:600;border-radius:10px;padding:12px 20px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+  button.primary{background:var(--brick);border-color:var(--brick);color:#fff}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .review-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+  .review-row:first-child{border-top:0}
+  .pill{font-size:13px;padding:2px 10px;border-radius:99px;background:var(--brick-soft);color:var(--brick);font-weight:600;white-space:nowrap}
+  .pill.done{background:transparent;color:var(--ok);border:1px solid var(--ok)}
+  .linkish{background:none;border:0;padding:0;color:var(--brick);text-decoration:underline;font-weight:500;text-align:left}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  a{color:var(--brick)}
+  details.plan{margin:12px 0 4px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  details.plan summary{cursor:pointer;padding:10px 14px;font-weight:600;font-size:14px;color:var(--brick)}
+  details.plan .imgs{display:grid;gap:10px;padding:0 10px 10px}
+  details.plan figure{margin:0}
+  details.plan img{width:100%;height:auto;display:block;background:var(--plan-bg);border-radius:8px}
+  details.plan figcaption{font-size:13px;color:var(--muted);margin-top:4px}
+  .legend{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:8px 0 0}
+  .legend b{color:var(--brick)}
+  .callout{background:var(--brick-soft);border-radius:12px;padding:12px 14px;font-size:14px;margin-top:16px}
+  @media (max-width:520px){
+    .card{padding:18px} .nav button{flex:1}
+    .grid-row{grid-template-columns:repeat(5,1fr)}
+    .grid-row>span{grid-column:1/-1;margin-top:6px}
+    .grid-row.grid-headrow{display:none}
+    .pair{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">1017 · Bellwood</div>
+    <h1>Boyd House Shared-Living Survey</h1>
+    <p class="lede">Our reactions to Rex’s first floor plans, plus how we actually plan to live together, so we can send him one clear round of feedback. Answer on your own first, then we compare.</p>
+  </header>
+  <div class="progress" id="progress" hidden>
+    <div class="bar"><i id="barFill"></i></div>
+    <small><span id="stepLabel"></span><span id="countLabel"></span></small>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script src="config.js"></script>
+<script>
+const CONFIG = window.SURVEY_CONFIG || { SHEET_ENDPOINT: "" };
+
+const PLANS = {
+  first: { src:'plan-first-floor.png', cap:'First floor — Rex’s A1.0, client review 9/24/26' },
+  basement: { src:'plan-basement.png', cap:'Basement — Rex’s A1.0, client review 9/24/26' }
+};
+const IMP_LOW = 'Not important', IMP_HIGH = 'Essential';
+
+const SECTIONS = [
+  { title:'The big picture', plan:['first','basement'], blurb:'What this house is for, and your first reaction to Rex’s draft.', qs:[
+    {id:'optimize', type:'checkbox', max:2, help:'(pick up to 2)', q:'Over the next 5–10 years, what should this house mainly be designed for?',
+      options:['Comfortable everyday living for the two of us','Entertaining friends and family','Flexibility as our lives change','Future rental value','Future use by one of us with a spouse/family','Future use by our parents','Maximum storage and practicality','Design and aesthetics']},
+    {id:'first_take', type:'radio', q:'Overall, how well does Rex’s first draft fit how you want to live?',
+      options:['Close — needs small tweaks','Good bones, a few real changes','Needs significant rework','Too early for me to say']},
+    {id:'zone_ahead', type:'radio', q:'As drawn, does either bedroom/bath zone come out ahead?',
+      note:'Our goal is two equal zones so the mortgage and utilities split 50/50. This is your gut read on Rex’s first draft.',
+      options:['The first-floor zone comes out ahead','The basement zone comes out ahead','They feel about even','Too early to tell']},
+    {id:'retreat', type:'scale', q:'How important is it that each of us has a bedroom/bathroom zone that feels like a private retreat?'},
+    {id:'cohesive', type:'scale', q:'How important is it that the house still feels like one household rather than two semi-independent apartments?'}
+  ]},
+  { title:'Bedrooms & personal space', plan:['first','basement'], blurb:'Rex shows two bedrooms upstairs and one in the basement. One of us takes the basement suite, the other takes an upstairs bedroom, and the leftover room becomes the office/guest room.', qs:[
+    {id:'bedroom_choice', type:'radio', q:'Which bedroom do you want as yours?',
+      options:['First floor — north bedroom (14\'0" × 11\'2")','First floor — south bedroom (11\'9" × 11\'5")','Basement bedroom (13\'0" × 10\'10")','No preference']},
+    {id:'bed_size', type:'radio', q:'What bed size should each primary bedroom comfortably fit?',
+      options:['Queen is enough','Queen preferred, but a king should fit','King should fit comfortably','No preference']},
+    {id:'bedroom_rank', type:'rank', q:'Rank these bedroom features, most to least important',
+      options:['Large, effective closet','Room for a dresser','Room for a lounge chair','Large TV','Extra walking space','Sound privacy']},
+    {id:'closet_size', type:'radio', q:'Are the closets as drawn big enough for your wardrobe?',
+      note:'Upstairs bedrooms get reach-in closets with bifold doors; the basement bedroom closet is about 3\'5" wide.',
+      options:['Yes','Tight but workable','No — I need more closet space','Not sure yet']},
+    {id:'closet_org', type:'scale', q:'How important is built-in closet organization (drawers, shoe storage, double hanging rods)?'},
+    {id:'equal_factors', type:'checkbox', max:3, help:'(pick up to 3)', q:'Which things matter most for our two zones to feel truly equal?',
+      note:'As drawn: upstairs bedrooms are 14\'0" × 11\'2" or 11\'9" × 11\'5" with a bifold closet and a 5\'0"-wide tub/shower bath; the basement bedroom is 13\'0" × 10\'10" with a 3\'5" closet and a larger (about 7\'8" × 7\'1") shower bath.',
+      options:['Bedroom size','Closet size','Bathroom size','Bathroom features (tub vs. shower, vanity, storage)','Natural light and windows','Sound privacy','Distance from social spaces and foot traffic','A bathroom guests don’t routinely use']},
+    {id:'equal_fallback', type:'radio', q:'If Rex can’t make the zones fully equal in one area, how should we even it out while still splitting costs 50/50?',
+      options:['Keep adjusting the design until they match','Give the other zone an offsetting upgrade (bigger closet, nicer finishes, more storage)','Accept small differences as long as the overall zones feel even','Not sure']}
+  ]},
+  { title:'Bathrooms', plan:['first','basement'], blurb:'One full bath per floor: a tub/shower upstairs and a walk-in shower downstairs.', qs:[
+    {id:'own_bath', type:'radio', q:'Should each of us mainly use his own floor’s bathroom?',
+      options:['Yes, strongly','Mostly, but we share when convenient','They should just be household bathrooms','No preference']},
+    {id:'bath_grid', type:'grid', q:'How important is each bathroom feature to you?',
+      note:'The upstairs bath is 5\'0" wide; the basement bath is about 7\'8" × 7\'1". Rate what you want — we’ll price it against the budget after.',
+      rows:['Double vanity','Large shower','Soaking tub','Lots of drawer/storage space','Heated floor','Excellent ventilation','Easy-to-clean finishes']},
+    {id:'tub', type:'radio', q:'Rex shows a tub/shower combo upstairs and a shower-only stall in the basement. What do you want?',
+      options:['Keep it as drawn','Flip it — shower upstairs, tub downstairs','Showers on both floors, no tub','A deep soaking tub/shower combo somewhere','No preference']},
+    {id:'bsmt_bath_access', type:'radio', note:'Upstairs, the hall bath is also the bath for guests and whoever uses the office, so both zones share their bathroom with someone.', q:'The basement bathroom opens off the family room, beside the bedroom door — not from inside the bedroom. How do you feel about that?',
+      options:['Good — guests can use it without entering the bedroom','I’d want it private to the bedroom (en suite)','Both — a door from the bedroom and one from the family room','No preference']}
+  ]},
+  { title:'Office & working from home', plan:['first'], blurb:'Assuming the spare bedroom becomes the office.', qs:[
+    {id:'wfh', type:'radio', q:'How many days a week do you normally work from home?', options:['0–1','2','3','4','5']},
+    {id:'calls', type:'scale', q:'How important is being able to take a private work call while the other person is also on one?'},
+    {id:'office_setup', type:'radio', q:'Which office setup sounds best?',
+      options:['Two permanent desks + a small couch','Two permanent desks, maximize workspace','One main desk + a flexible second spot + a larger couch','Lean more guest room than workroom','No preference']},
+    {id:'office_reversible', type:'radio', q:'Should the office stay easy to convert back into a regular bedroom?',
+      options:['Absolutely','Preferably','Not important','No preference']}
+  ]},
+  { title:'Kitchen & dining', plan:['first'], blurb:'Rex’s kitchen is about 10\'9" × 11\'2" with no island. There’s no separate dining room — the 15\' × 11\'5" living room does double duty.', qs:[
+    {id:'kitchen_grid', type:'grid', q:'How important is each of these to you?',
+      rows:['Maximum cabinet storage','Large pantry','Large refrigerator','Lots of counter/prep space','Two people cooking comfortably','Kitchen island','Easy circulation','Dining table for six']},
+    {id:'island', type:'radio', q:'Which kitchen tradeoff would you prefer?',
+      options:['More cabinetry, no island (as drawn)','Less cabinetry, a small island or peninsula','An island matters enough to redesign around it','No preference']},
+    {id:'living_dining', type:'radio', q:'How should the first-floor living/dining space mainly function?',
+      options:['Dining first, lounge second','Equal dining/living hybrid','Living room first, dining second','Mostly dining and entertaining','Unsure']},
+    {id:'meals', type:'radio', q:'For everyday meals, where do you picture eating most?',
+      options:['Dining table','Kitchen counter / bar seating','Couch or basement','Bedroom or office when busy','It varies']}
+  ]},
+  { title:'Basement family room', plan:['basement'], blurb:'An L-shaped family room around the stairs, with a wet bar sink on the mechanical-room wall.', qs:[
+    {id:'bsmt_primary', type:'scale', q:'How important is it that the basement is our main entertainment space?'},
+    {id:'bsmt_uses', type:'checkbox', q:'What should the basement support?', help:'(select all that matter)',
+      options:['Movie nights','Game nights','Film club','Watching sports','Cocktails / bar entertaining','Parties of 15+','Dancing / open floor','Quiet reading / lounging','Family gatherings','Workouts / home gym']},
+    {id:'bar', type:'radio', q:'How built-out should the wet bar be?', note:'Rex currently shows a bar sink only.',
+      options:['Just the sink, as drawn','Sink + beverage fridge','Sink + fridge + cabinets/storage','Full bar: fridge, ice maker, glassware and liquor storage','No preference']},
+    {id:'seating_vs_open', type:'radio', q:'In the family room, which matters more?',
+      options:['Maximum seating','Maximum open floor','A balance of both','No preference']},
+    {id:'column', type:'radio', q:'There’s a structural post in the middle of the family room, on the beam line. How do you feel about it?',
+      options:['Not a concern','Design around it — wrap it, or add a ledge or bar top','It bothers me — I want to talk about it','Hadn’t noticed — I’ll take a look']},
+    {id:'windows', type:'radio', q:'Beyond the bedroom (which needs a code-compliant egress window either way), would you support enlarging basement windows for more light where structurally practical?',
+      options:['Definitely','Probably','Neutral','Probably not','Definitely not']}
+  ]},
+  { title:'Laundry, storage & entry', plan:['basement'], blurb:'Laundry sits inside the mechanical room with the furnace and water heater. Storage is two basement rooms plus coat and linen closets.', qs:[
+    {id:'laundry', type:'radio', q:'What laundry setup do you want?',
+      options:['Stacked washer/dryer in the mechanical room, as drawn','Side-by-side in the mechanical room','A separate, finished laundry nook, even if it costs space elsewhere','Whatever makes the best overall room','No preference']},
+    {id:'laundry_grid', type:'grid', q:'How important is each laundry feature?',
+      rows:['Folding counter','Separate hampers','Separate personal cabinets','Hanging/drying rod','Tall cleaning-supply cabinet','Finished walls','Nice flooring','Equipment hidden from view']},
+    {id:'storage_rank', type:'rank', q:'Rank these storage needs, highest to lowest priority',
+      options:['Clothing & shoes','Luggage','Holiday decorations','Household bulk goods','Books, movies & games','Hobby & sports equipment','Cleaning supplies','Entertaining & bar supplies']},
+    {id:'storage_vs_open', type:'radio', q:'If more storage means giving up some open floor area, what would you prefer?',
+      options:['Storage is worth it','Open space matters more','Depends on the room','Unsure']},
+    {id:'entry', type:'radio', q:'Shoes and coats: what should the entry handle?',
+      note:'The side door opens straight into the kitchen/living area; the coat closet is by the stairs.',
+      options:['Shoes off at the door — design a real drop zone (bench, shoe storage, hooks)','The coat closet is enough','Doesn’t matter to me']}
+  ]},
+  { title:'Technology & smart home', blurb:'The walls will be open — this is the cheapest time to run wire.', qs:[
+    {id:'ethernet', type:'scale', q:'How important is having Ethernet available throughout the house?'},
+    {id:'hardwired', type:'checkbox', q:'Which hardwired features would you personally value?', help:'(select all that apply)',
+      options:['Ethernet in every bedroom','Multiple Ethernet jacks in the office','Ethernet behind TVs','Ceiling Wi-Fi access points','Wired exterior cameras','Wired video doorbell','Smart locks','Ethernet to the garage','Power/Ethernet for backyard entertaining','Wired smart shades','Central network rack','Spare conduit for future wiring']},
+    {id:'battery', type:'scale', q:'How important is avoiding battery-powered smart devices where hardwiring is practical?'},
+    {id:'central', type:'scale', q:'How important is one central spot for network/AV equipment instead of gear scattered around the house?',
+      note:'The mechanical room or a basement storage room would be the natural spot.'}
+  ]},
+  { title:'Sound, schedules & comfort', plan:['first','basement'], blurb:'How we live day to day decides how much sound separation and climate control the house needs.', qs:[
+    {id:'schedule', type:'radio', q:'Which best describes your usual schedule?',
+      options:['Early to bed, early up','Late nights, late mornings','Early up and late nights','It varies — travel or shifting hours']},
+    {id:'acoustic_bedrooms', type:'scale', q:'How important is sound separation between the basement bedroom and the bedroom directly above it?',
+      note:'The basement bedroom sits right under the first-floor north bedroom.'},
+    {id:'acoustic_bsmt', type:'scale', q:'How important is sound separation between the basement family room and the first-floor bedrooms?'},
+    {id:'sound_vs_finish', type:'radio', q:'If soundproofing costs money that could otherwise go to finishes, which would you prefer?',
+      options:['Spend more on soundproofing','Spend more on finishes','Split the difference','Unsure']},
+    {id:'zoning', type:'scale', q:'How important is setting the temperature separately on each floor (zoned heating/cooling)?',
+      note:'Basements run cooler than the floor above. Zoning lets each floor be set on its own.'},
+    {id:'cleanliness', type:'scale', q:'What’s your standard for shared spaces?', low:'Lived-in', high:'Spotless',
+      note:'Tells us how much to lean into easy-clean surfaces and closed storage that hides clutter.'}
+  ]},
+  { title:'Overnight guests', plan:['first','basement'], blurb:'Friends and family staying over (partners come later).', qs:[
+    {id:'overnight_freq', type:'radio', q:'How often do you expect to have overnight guests other than a partner?',
+      options:['Rarely — less than once a year','1–2 times a year','3–5 times a year','More than 5 times a year']},
+    {id:'guest_sleep', type:'radio', q:'Where should overnight guests sleep?',
+      options:['Office, on a sleeper sofa','Common area downstairs','The host’s bedroom, if appropriate','Dedicated guest space is worth designing around','Depends on the guest']},
+    {id:'guest_bath_up', type:'radio', q:'When we entertain upstairs, which bathroom should guests use?',
+      options:['First-floor bathroom','Basement bathroom','Either is fine','Depends on the size of the event']},
+    {id:'guest_bath_down', type:'radio', q:'When we entertain in the basement, which bathroom should guests use?',
+      options:['Basement bathroom, when practical','Either bathroom','The first-floor bathroom should stay available too','No preference']},
+    {id:'bath_path', type:'scale', q:'How important is it that guests can reach a bathroom without passing through someone’s private zone?',
+      note:'Upstairs, the bath door is at the living room, next to the bedroom hall. Downstairs, it’s right beside the bedroom door.'}
+  ]},
+  { title:'Hosting & shared space', plan:['first','basement'], blurb:'How the floors work when one or both of us has people over.', qs:[
+    {id:'host_types', type:'checkbox', q:'What kinds of hosting do you personally expect to do?', help:'(select all that apply)',
+      options:['Dinner for 2–4','Dinner for 5–6','Game nights','Movie / film nights','Watching sports','Cocktails / drinks','Parties of 10–15','Parties of 15+','Family holidays','Meetings / organization gatherings','Friends dropping by','I don’t expect to host much']},
+    {id:'host_style', type:'radio', q:'When we entertain, which setup sounds most like you?',
+      options:['Everyone gathers in one room','People spread between the kitchen/dining area and the basement','Different groups can occupy different areas','Depends heavily on the event']},
+    {id:'bsmt_pressure', type:'scale', q:'How important is it that the basement can handle a gathering without the whole first floor feeling taken over?'},
+    {id:'both_at_once', type:'radio', q:'One of us has friends over downstairs while the other has a date or a dinner upstairs. How should the house handle that?',
+      options:['Both should be able to happen comfortably','Usually one event should take priority','Depends on the size of each','We’d coordinate schedules instead']},
+    {id:'coordination', type:'radio', q:'When one of us hosts, how much heads-up should be normal?',
+      options:['None for small gatherings','A quick heads-up','Advance notice for anything over 4–6 people','We both agree before larger gatherings','Depends on whether guests stay overnight']},
+    {id:'common_philosophy', type:'radio', q:'Which best describes how you think about the common spaces?',
+      options:['Equally shared at all times','Shared, but either of us can temporarily “claim” one for an event','Some spaces naturally belong more to one person’s lifestyle','We should set clearer zones for different activities']},
+    {id:'primary_social', type:'radio', q:'Which room should be the home’s main social gathering space?',
+      options:['Basement family room','First-floor living/dining','Kitchen','Both floors equally','Depends on the gathering']}
+  ]},
+  { title:'Partners', blurb:'Five years is a long time in your 30s — worth planning for now.', qs:[
+    {id:'partner_function', type:'radio', q:'If one of us has a partner spending the night, how should the house ideally work?',
+      options:['They mostly stay in that brother’s bedroom/bath zone','They should feel comfortable using all common spaces normally','In between — common spaces are shared, but privacy matters','No preference']},
+    {id:'partner_comfort', type:'radio', q:'How comfortable would you be with the other’s partner being in the house regularly?',
+      options:['Completely comfortable','Comfortable if communicated in advance','Fine occasionally, but not several nights a week','I’d want fairly defined boundaries','Unsure']},
+    {id:'equal_home', type:'scale', q:'If one of us eventually has a serious partner who spends a lot of time here, how important is it that the house still feels equally like both brothers’ home?'},
+    {id:'partner_storage', type:'radio', q:'Should the design plan for a partner’s occasional belongings (toiletries, a few clothes)?',
+      options:['Yes — enough private storage in each zone for that','Somewhat, but don’t design around it','No, unnecessary','No preference']},
+    {id:'partner_bath', type:'scale', q:'How important is bathroom privacy when a partner is staying over?'}
+  ]},
+  { title:'Outside & garage', blurb:'The garage rebuild-vs-rehab decision is still open, so this matters now.', qs:[
+    {id:'garage', type:'checkbox', q:'What should the garage be for?', options:['Parking','Workshop / tools','Gym','Storage','Hangout space'], other:true},
+    {id:'yard', type:'checkbox', q:'What should the backyard and patio be for?', options:['Grilling & cookouts','Garden / plants','Lounging','Hosting outdoors','Keep it low-maintenance'], other:true},
+    {id:'pets', type:'radio', q:'Should we plan for a pet?', note:'Affects flooring, the yard, and whether the entry needs to handle muddy paws.',
+      options:['Yes, a dog','Yes, a cat','Open to either','Maybe later','No pets']}
+  ]},
+  { title:'Looking ahead', blurb:'The long view.', qs:[
+    {id:'horizon', type:'radio', q:'How long do you picture living here?', options:['1–3 years','3–5 years','5–10 years','10+ years','Not sure']},
+    {id:'scenarios', type:'checkbox', q:'Which future scenarios should the renovation accommodate?', help:'(only the ones you think are genuinely plausible)',
+      options:['We keep living together beyond five years','One of us + a spouse live here','Three adults live here temporarily','Our parents eventually live here','The whole house becomes a rental','We eventually sell','Unsure']},
+    {id:'aging', type:'scale', q:'How important are subtle aging-in-place features now — wider doors, a curbless shower, grab-bar blocking, lever handles — even if nobody needs them yet?'}
+  ]},
+  { title:'Forced tradeoffs', blurb:'Pick one in each pair. Assume you can’t have both equally.', qs:[
+    {id:'t_closet_bath', type:'pair', q:'Closet or bathroom?', options:['Larger bedroom closet','Larger bathroom']},
+    {id:'t_kitchen_living', type:'pair', q:'Kitchen or living?', options:['Larger kitchen','Larger dining/living area']},
+    {id:'t_bath_office', type:'pair', q:'Bath or office?', options:['Larger first-floor bathroom','Larger office/guest room']},
+    {id:'t_tech_finish', type:'pair', q:'Behind the walls or on them?', options:['More smart-home infrastructure behind the walls','More money on visible finishes']},
+    {id:'t_today_future', type:'pair', q:'Now or later?', options:['Optimize for how we live today','Spend some space/money on future family or parents']},
+    {id:'t_capacity_privacy', type:'pair', q:'Parties or peace?', options:['More basement capacity for big gatherings','More sound/privacy separation for everyday living']},
+    {id:'t_common_private', type:'pair', q:'Shared or private?', options:['Larger shared common spaces','Larger, more comfortable private bedroom zones']}
+  ]},
+  { title:'Feedback for Rex & final thoughts', plan:['first','basement'], blurb:'The open-ended questions. Specifics help most.', qs:[
+    {id:'notes_first', type:'textarea', q:'Anything on the first-floor plan you’d flag or change?'},
+    {id:'notes_basement', type:'textarea', q:'Anything on the basement plan you’d flag or change?'},
+    {id:'top3', type:'textarea', q:'If you could ask Rex for three changes, what would they be?'},
+    {id:'frustrate', type:'textarea', q:'What’s one thing about this house that would frustrate you every day if we get it wrong?'},
+    {id:'lose', type:'textarea', q:'What’s one feature you’d be disappointed to lose because the other person doesn’t value it as much?'},
+    {id:'excited', type:'textarea', q:'When you picture living here after the renovation, what room or feature are you most excited about?'},
+    {id:'tension', type:'textarea', q:'Is there any situation — dating, partners, overnight guests, friends, entertaining — that could realistically cause tension between two adult brothers sharing this house?'},
+    {id:'decisions', type:'radio', q:'When we disagree on a design choice, how should we settle it?',
+      options:['Talk it through until we agree','Whoever it affects more makes the call','Let budget and resale value decide','Ask Rex to recommend, then decide']}
+  ]}
+];
+
+/* ---------- State ---------- */
+const KEY = 'boyd-house-survey-v2';
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } },
+  set(v){ try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){} },
+  clear(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+};
+let state = store.get() || { name:'', answers:{}, step:0, submitted:null };
+let n = 0;
+const ALL_QS = SECTIONS.flatMap((s,si) => s.qs.map(q => ({...q, section:s.title, si, num:++n})));
+const QMAP = Object.fromEntries(ALL_QS.map(q => [q.id, q]));
+const LAST = SECTIONS.length + 1; // review step
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function isAnswered(q){
+  const v = state.answers[q.id];
+  if (v == null) return false;
+  if (Array.isArray(v)) return v.length > 0;
+  if (typeof v === 'object') return Object.keys(v).length > 0;
+  return String(v).trim() !== '';
+}
+function sectionCount(si){
+  const qs = ALL_QS.filter(q => q.si === si);
+  return { done: qs.filter(isAnswered).length, total: qs.length };
+}
+function save(){ store.set(state); updateProgress(); }
+
+/* ---------- Rendering ---------- */
+function planBlock(keys, open){
+  if (!keys || !keys.length) return '';
+  const label = keys.length > 1 ? 'View Rex’s floor plans' : `View Rex’s ${keys[0] === 'first' ? 'first-floor' : 'basement'} plan`;
+  return `<details class="plan"${open?' open':''}><summary>${label}</summary><div class="imgs">${keys.map(k =>
+    `<figure><a href="${PLANS[k].src}" target="_blank" rel="noopener"><img src="${PLANS[k].src}" alt="${esc(PLANS[k].cap)}" loading="lazy"></a><figcaption>${esc(PLANS[k].cap)} · tap to open full size</figcaption></figure>`).join('')}</div></details>`;
+}
+
+function renderQInner(q){
+  const v = state.answers[q.id];
+  const help = q.help ? `<span class="q-help">${esc(q.help)}</span>` : '';
+  const note = q.note ? `<p class="q-note">${esc(q.note)}</p>` : '';
+  let body = '';
+  if (q.type === 'radio' || q.type === 'checkbox'){
+    const opts = q.other ? [...q.options, '__other'] : q.options;
+    body = '<div class="choices">' + opts.map(o => {
+      const checked = q.type === 'radio' ? v === o : Array.isArray(v) && v.includes(o);
+      return `<label class="choice"><input type="${q.type}" name="${q.id}" value="${esc(o)}" data-q="${q.id}" ${checked?'checked':''}><span>${esc(o === '__other' ? 'Other' : o)}</span></label>`;
+    }).join('') + '</div>';
+    if (q.other){
+      const on = q.type === 'radio' ? v === '__other' : Array.isArray(v) && v.includes('__other');
+      body += `<input type="text" class="other-input" data-other="${q.id}" placeholder="Tell me more…" value="${esc(state.answers[q.id + '__other'] || '')}" ${on?'':'hidden'}>`;
+    }
+    if (q.max) body += `<div class="note" id="note-${q.id}"></div>`;
+  } else if (q.type === 'pair'){
+    body = '<div class="pair">' + q.options.map((o,i) =>
+      `<label class="choice"><input type="radio" name="${q.id}" value="${esc(o)}" data-q="${q.id}" ${v===o?'checked':''}><b>${i?'B':'A'}</b><span>${esc(o)}</span></label>`).join('') + '</div>';
+  } else if (q.type === 'scale'){
+    body = '<div class="scale">' + [1,2,3,4,5].map(k =>
+      `<label><input type="radio" name="${q.id}" value="${k}" data-q="${q.id}" ${String(v)===String(k)?'checked':''}>${k}</label>`).join('') +
+      `</div><div class="scale-ends"><span>${esc(q.low || IMP_LOW)}</span><span>${esc(q.high || IMP_HIGH)}</span></div>`;
+  } else if (q.type === 'grid'){
+    const val = v || {};
+    body = `<div class="grid"><div class="grid-row grid-headrow"><span></span>${[1,2,3,4,5].map(k=>`<div class="grid-head">${k}</div>`).join('')}</div>` +
+      q.rows.map((r,ri) => `<div class="grid-row"><span>${esc(r)}</span>${[1,2,3,4,5].map(k =>
+        `<label><input type="radio" name="${q.id}__${ri}" value="${k}" data-grid="${q.id}" data-row="${ri}" ${val[r]===k?'checked':''}>${k}</label>`).join('')}</div>`).join('') +
+      `</div><div class="scale-ends"><span>1 = ${IMP_LOW}</span><span>5 = ${IMP_HIGH}</span></div>`;
+  } else if (q.type === 'rank'){
+    const order = Array.isArray(v) ? v : q.options;
+    body = `<ol class="rank ${Array.isArray(v)?'':'untouched'}">` + order.map((o,i) => `<li><span class="pos">${i+1}</span><span class="lbl">${esc(o)}</span>
+      <button type="button" data-rank="${q.id}" data-i="${i}" data-d="-1" aria-label="Move ${esc(o)} up" ${i===0?'disabled':''}>▲</button>
+      <button type="button" data-rank="${q.id}" data-i="${i}" data-d="1" aria-label="Move ${esc(o)} down" ${i===order.length-1?'disabled':''}>▼</button></li>`).join('') +
+      `</ol><div class="rank-foot"><span>${Array.isArray(v) ? 'Saved.' : 'Use the arrows to reorder.'}</span>${Array.isArray(v) ? '' : `<button type="button" data-rank-ok="${q.id}">This order is right</button>`}</div>`;
+  } else if (q.type === 'text'){
+    body = `<input type="text" data-q="${q.id}" value="${esc(v||'')}">`;
+  } else {
+    body = `<textarea data-q="${q.id}">${esc(v||'')}</textarea>`;
+  }
+  return `<p class="q-title"><span class="q-num">${q.num}.</span>${esc(q.q)}${help}</p>${note}${body}`;
+}
+const renderQ = q => `<div class="q" id="q-${q.id}">${renderQInner(q)}</div>`;
+function rerenderQ(id){ const el = document.getElementById('q-' + id); if (el) el.innerHTML = renderQInner(QMAP[id]); }
+
+function render(){
+  const s = state.step;
+  document.getElementById('progress').hidden = s === 0 || s > LAST;
+  if (s === 0){
+    app.innerHTML = `
+      <section class="card">
+        <h2>Before you start</h2>
+        <p class="blurb">About ${ALL_QS.length} questions in ${SECTIONS.length} short sections — plan on 25 minutes. Progress saves on this device, so you can stop and come back.</p>
+        ${planBlock(['first','basement'], false)}
+        <h3>For the 1–5 importance questions</h3>
+        <div class="legend">
+          <b>1</b><span>Not important at all</span>
+          <b>2</b><span>Slightly important</span>
+          <b>3</b><span>Moderately important</span>
+          <b>4</b><span>Very important</span>
+          <b>5</b><span>Essential — would strongly affect how happy I am in the house</span>
+        </div>
+        <div class="callout"><b>Our goal:</b> two bedroom/bathroom zones that are as equal as possible, so the mortgage and utilities split evenly. Keep that in mind as you react to the plan.<br><br>Rate what you actually want, not what you think we can afford. We’ll price the wish list against the budget afterward.</div>
+        <div class="q"><p class="q-title">Your name</p><input type="text" id="name" value="${esc(state.name)}" autocomplete="given-name"></div>
+      </section>
+      <div class="nav"><span></span><button class="primary" id="next">Start</button></div>`;
+    const name = document.getElementById('name');
+    const btn = document.getElementById('next');
+    const sync = () => { btn.disabled = !name.value.trim(); };
+    name.addEventListener('input', () => { state.name = name.value; save(); sync(); });
+    sync();
+    btn.onclick = () => go(1);
+  } else if (s <= SECTIONS.length){
+    const sec = SECTIONS[s-1];
+    app.innerHTML = `
+      <section class="card">
+        <h2>${esc(sec.title)}</h2>
+        <p class="blurb">${esc(sec.blurb)}</p>
+        ${planBlock(sec.plan, false)}
+        ${ALL_QS.filter(q => q.si === s-1).map(renderQ).join('')}
+      </section>
+      <div class="nav"><button id="back">Back</button><button class="primary" id="next">${s === SECTIONS.length ? 'Review' : 'Next'}</button></div>`;
+    document.getElementById('back').onclick = () => go(s-1);
+    document.getElementById('next').onclick = () => go(s+1);
+  } else if (s === LAST){
+    const answered = ALL_QS.filter(isAnswered).length;
+    app.innerHTML = `
+      <section class="card">
+        <h2>Review</h2>
+        <p class="blurb">${answered} of ${ALL_QS.length} answered. Skipped questions are fine — they’ll show as blank when we compare.</p>
+        ${SECTIONS.map((sec,i) => { const c = sectionCount(i); return `
+          <div class="review-row">
+            <button class="linkish" data-jump="${i+1}">${esc(sec.title)}</button>
+            <span class="pill ${c.done===c.total?'done':''}">${c.done}/${c.total}</span>
+          </div>`; }).join('')}
+      </section>
+      <div class="nav"><button id="back">Back</button><button class="primary" id="submit">Submit my answers</button></div>`;
+    document.getElementById('back').onclick = () => go(s-1);
+    document.getElementById('submit').onclick = submit;
+    app.querySelectorAll('[data-jump]').forEach(b => b.onclick = () => go(+b.dataset.jump));
+  } else {
+    renderDone();
+  }
+  updateProgress();
+}
+
+function renderDone(){
+  const sent = state.submitted && state.submitted.sent;
+  app.innerHTML = `
+    <section class="card">
+      <h2>Done — thanks, ${esc(state.name.trim())}.</h2>
+      <p class="blurb">${sent ? 'Your answers are in the Boyd Brother Survey sheet. Once you’ve both submitted, the compare page can pull both sets straight from the sheet. Downloading a copy is optional backup.' : 'Download your answers file and send it to your brother. When you both have files, open the compare page to see where we line up and what to raise with Rex.'}</p>
+      <div class="actions">
+        <button class="primary" id="dl">Download my answers</button>
+        <button id="copy">Copy as text</button>
+        <a href="compare.html"><button type="button">Open compare page</button></a>
+      </div>
+      <div class="note" id="copyNote"></div>
+    </section>
+    <div class="nav"><button id="edit">Edit answers</button><button id="reset">Start over</button></div>`;
+  document.getElementById('dl').onclick = download;
+  document.getElementById('copy').onclick = copyText;
+  document.getElementById('edit').onclick = () => go(LAST);
+  document.getElementById('reset').onclick = () => {
+    if (confirm('Clear all answers on this device?')){ store.clear(); state = { name:'', answers:{}, step:0, submitted:null }; render(); }
+  };
+}
+
+function go(step){
+  state.step = Math.max(0, Math.min(step, LAST + 1));
+  save(); render(); window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress(){
+  const s = state.step;
+  const answered = ALL_QS.filter(isAnswered).length;
+  document.getElementById('barFill').style.width = (answered / ALL_QS.length * 100) + '%';
+  document.getElementById('stepLabel').textContent = s <= SECTIONS.length ? `Section ${s} of ${SECTIONS.length}` : 'Review';
+  document.getElementById('countLabel').textContent = `${answered}/${ALL_QS.length} answered`;
+}
+
+/* ---------- Input handling ---------- */
+app.addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset.other){ state.answers[el.dataset.other + '__other'] = el.value; save(); return; }
+  if (el.dataset.grid){
+    const q = QMAP[el.dataset.grid];
+    const cur = {...(state.answers[q.id] || {})};
+    cur[q.rows[+el.dataset.row]] = +el.value;
+    state.answers[q.id] = cur; save(); return;
+  }
+  const id = el.dataset.q; if (!id) return;
+  const q = QMAP[id];
+  if (q.type === 'checkbox'){
+    let picked = [...app.querySelectorAll(`input[name="${id}"]`)].filter(b => b.checked).map(b => b.value);
+    if (q.max && picked.length > q.max){
+      el.checked = false;
+      picked = picked.filter(x => x !== el.value);
+      const note = document.getElementById('note-' + id);
+      if (note){ note.textContent = `Pick up to ${q.max} — uncheck one to swap.`; setTimeout(() => note.textContent = '', 2500); }
+    }
+    state.answers[id] = picked;
+  } else {
+    state.answers[id] = el.value;
+  }
+  if (q.other){
+    const o = app.querySelector(`[data-other="${id}"]`);
+    const on = Array.isArray(state.answers[id]) ? state.answers[id].includes('__other') : state.answers[id] === '__other';
+    o.hidden = !on; if (on && el.value === '__other') o.focus();
+  }
+  save();
+});
+app.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.rank){
+    const q = QMAP[b.dataset.rank];
+    const order = [...(state.answers[q.id] || q.options)];
+    const i = +b.dataset.i, j = i + (+b.dataset.d);
+    if (j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    state.answers[q.id] = order; save(); rerenderQ(q.id);
+    const again = document.querySelector(`[data-rank="${q.id}"][data-i="${j}"][data-d="${b.dataset.d}"]`) ||
+                  document.querySelector(`[data-rank="${q.id}"][data-i="${j}"]`);
+    if (again) again.focus();
+  } else if (b.dataset.rankOk){
+    const q = QMAP[b.dataset.rankOk];
+    state.answers[q.id] = [...q.options]; save(); rerenderQ(q.id);
+  }
+});
+
+/* ---------- Output ---------- */
+function formatAnswer(q){
+  const v = state.answers[q.id];
+  if (!isAnswered(q)) return '';
+  const other = (state.answers[q.id + '__other'] || '').trim();
+  const swap = x => x === '__other' ? `Other: ${other || '(not specified)'}` : x;
+  if (q.type === 'grid') return q.rows.map(r => `${r}: ${v[r] ?? '–'}`).join('; ');
+  if (q.type === 'rank') return v.map((x,i) => `${i+1}. ${x}`).join('; ');
+  if (Array.isArray(v)) return v.map(swap).join('; ');
+  if (q.type === 'scale') return `${v}/5 (1 = ${q.low || IMP_LOW}, 5 = ${q.high || IMP_HIGH})`;
+  return swap(String(v).trim());
+}
+function buildPayload(){
+  return {
+    survey: 'Boyd House Shared-Living Survey', version: 2, plan: 'RLJ Design A1.0, client review 9/24/26',
+    respondent: state.name.trim(),
+    submitted_at: new Date().toISOString(),
+    answers: ALL_QS.map(q => ({
+      id: q.id, num: q.num, section: q.section, question: q.q, type: q.type,
+      rows: q.rows, options: q.type === 'rank' ? q.options : undefined,
+      value: state.answers[q.id] ?? null,
+      other: state.answers[q.id + '__other'] || '',
+      answer: formatAnswer(q)
+    }))
+  };
+}
+async function submit(){
+  const btn = document.getElementById('submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const payload = buildPayload();
+  let sent = false;
+  if (CONFIG.SHEET_ENDPOINT){
+    try{
+      await fetch(CONFIG.SHEET_ENDPOINT, { method:'POST', mode:'no-cors',
+        body: new URLSearchParams({ payload: JSON.stringify(payload) }) });
+      sent = true;
+    }catch(err){ sent = false; }
+  }
+  state.submitted = { at: payload.submitted_at, sent };
+  go(LAST + 1);
+}
+function download(){
+  const payload = buildPayload();
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  const slug = payload.respondent.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'me';
+  a.href = URL.createObjectURL(blob);
+  a.download = `boyd-house-survey-${slug}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+async function copyText(){
+  const p = buildPayload();
+  let out = `Boyd House Shared-Living Survey — ${p.respondent}\n`;
+  let last = '';
+  p.answers.forEach(a => {
+    if (a.section !== last){ out += `\n== ${a.section} ==\n`; last = a.section; }
+    out += `${a.num}. ${a.question}\n   ${a.answer || '(skipped)'}\n`;
+  });
+  const note = document.getElementById('copyNote');
+  try{ await navigator.clipboard.writeText(out); note.textContent = 'Copied — paste it anywhere.'; }
+  catch(e){ note.textContent = 'Copy didn’t work in this browser — use Download instead.'; }
+}
+
+render();
+</script>
+</body>
+</html>
